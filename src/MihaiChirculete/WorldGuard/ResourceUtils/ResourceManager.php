@@ -8,6 +8,7 @@ use MihaiChirculete\WorldGuard\WorldGuard;
 
 class ResourceManager
 {
+
     /** Only 1 instance of this class will be allowed at all times */
     private static $instance = null;
     private $resUpdaterInstance = null;
@@ -18,6 +19,7 @@ class ResourceManager
     private $lang = [];
     private $config = [];
     private $regions = [];
+
     private function __construct(WorldGuard $plugin, Server $sv)
     {
         $this->pluginInstance = $plugin;
@@ -26,10 +28,12 @@ class ResourceManager
 
         $this->pluginVersion = $this->pluginInstance->getDescription()->getVersion();
     }
+
     public static function getInstance(WorldGuard $plugin, Server $sv)
     {
-        if(ResourceManager::$instance === null)
+        if (ResourceManager::$instance === null) {
             ResourceManager::$instance = new ResourceManager($plugin, $sv);
+        }
 
         return ResourceManager::$instance;
     }
@@ -38,21 +42,22 @@ class ResourceManager
     /*public function getLanguage() : BaseLang {
         return $this->baseLang;
     }
-    
+
     public function getFallBackLang() : BaseLang {
         return new BaseLang(BaseLang::FALLBACK_LANGUAGE, $this->getFile() . "resources/");
     }
+
     public function onLoad() : void {
     $this->getLogger()->debug(TF::BOLD . "Loading Languages");
     // Loading Languages
     // @var string $lang 
     $lang = $this->getConfig()->get("Language", BaseLang::FALLBACK_LANGUAGE);
-    if($this->getConfig()->get("Custom Messages", false)) {
-        if(!file_exists($this->getDataFolder()."lang.ini")) {
+    if ($this->getConfig()->get("Custom Messages", false)) {
+        if (!file_exists($this->getDataFolder()."lang.ini")) {
             // @var string|resource $resource 
             $resource = $this->getResource($lang.".ini") ?? file_get_contents($this->getFile()."resources/".BaseLang::FALLBACK_LANGUAGE.".ini");
             file_put_contents($this->getDataFolder()."lang.ini", $resource);
-            if(!is_string($resource)) {
+            if (!is_string($resource)) {
                 // @var resource $resource 
                 fclose($resource);
             }
@@ -60,8 +65,8 @@ class ResourceManager
             $this->getLogger()->debug("Custom Language ini created");
         }
         $this->baseLang = new BaseLang("lang", $this->getDataFolder());
-    }else{
-        if(file_exists($this->getDataFolder()."lang.ini")) {
+    } else {
+        if (file_exists($this->getDataFolder()."lang.ini")) {
             unlink($this->getDataFolder()."lang.ini");
             unlink($this->getDataFolder().BaseLang::FALLBACK_LANGUAGE.".ini");
             $this->getLogger()->debug("Custom Language ini deleted");
@@ -69,36 +74,53 @@ class ResourceManager
         $this->baseLang = new BaseLang($lang, $this->getFile() . "resources/");
     }
     }*/
-    public function getConfig() { return $this->config; }
-    public function getLanguagePack() { return $this->lang; }
-    public function getMessages() { return $this->messages; }
-    public function getRegions() : array { return $this->regions; }
-    public function getPluginVersion() { return $this->pluginVersion; }
+
+    public function getConfig() {
+        return $this->config;
+    }
+
+    public function getLanguagePack() {
+        return $this->lang;
+    }
+
+    public function getMessages() {
+        return $this->messages;
+    }
+
+    public function getRegions() : array {
+        return $this->regions;
+    }
+
+    public function getPluginVersion() {
+        return $this->pluginVersion;
+    }
 
     public function getConfigVersion()
     {
-        if(isset($this->config['version']))
+        if (isset($this->config['version'])) {
             return $this->config['version'];
+        }
 
         return null;
     }
 
     public function getLanguagePackVersion()
     {
-        if(isset($this->lang['version']))
+        if (isset($this->lang['version'])) {
             return $this->lang['version'];
+        }
 
         return null;
     }
 
     public function getMessagesVersion()
     {
-        if(isset($this->messages['version']))
+        if (isset($this->messages['version'])) {
             return $this->messages['version'];
+        }
 
         return null;
     }
-
 
     public function loadResources()
     {
@@ -123,7 +145,7 @@ class ResourceManager
         }
     }
 
-    public function saveRegions($regions){
+    public function saveRegions($regions) {
         $this->regions = $regions;
 
         $data = [];
@@ -175,11 +197,9 @@ class ResourceManager
         /**
          * load messages if file exists and if not write the default ones
          */
-        if(is_file($path.'messages.yml'))
-        {
+        if (is_file($path.'messages.yml')) {
             $this->messages = yaml_parse_file($path.'messages.yml');
-        }
-        else{
+        } else{
             $this->messages = $this->resUpdaterInstance->getDefaultMessages();
 
             yaml_emit_file($path.'messages.yml', $this->messages);
