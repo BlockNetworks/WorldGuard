@@ -1,19 +1,28 @@
 <?php
+
 declare(strict_types=1);
+
 namespace MihaiChirculete\WorldGuard\forms;
+
 use Closure;
-use pocketmine\{form\FormValidationException, Player, utils\Utils};
+use pocketmine\form\FormValidationException;
+use pocketmine\utils\Utils
+use pocketmine\Player;
 use function gettype;
 use function is_bool;
-class ModalForm extends Form{
+
+class ModalForm extends Form {
+
 	/** @var string */
 	protected $text;
+
 	/** @var string */
 	private $yesButton;
 	/** @var string */
 	private $noButton;
 	/** @var Closure */
 	private $onSubmit;
+
 	/**
 	 * @param string  $title
 	 * @param string  $text
@@ -21,7 +30,7 @@ class ModalForm extends Form{
 	 * @param string  $yesButton
 	 * @param string  $noButton
 	 */
-	public function __construct(string $title, string $text, Closure $onSubmit, string $yesButton = "gui.yes", string $noButton = "gui.no"){
+	public function __construct(string $title, string $text, Closure $onSubmit, string $yesButton = "gui.yes", string $noButton = "gui.no") {
 		parent::__construct($title);
 		$this->text = $text;
 		$this->yesButton = $yesButton;
@@ -29,6 +38,7 @@ class ModalForm extends Form{
 		Utils::validateCallableSignature(function(Player $player, bool $response) : void{}, $onSubmit);
 		$this->onSubmit = $onSubmit;
 	}
+
 	/**
 	 * @param string  $title
 	 * @param string  $text
@@ -36,46 +46,52 @@ class ModalForm extends Form{
 	 *
 	 * @return ModalForm
 	 */
-	public static function createConfirmForm(string $title, string $text, Closure $onConfirm) : self{
+	public static function createConfirmForm(string $title, string $text, Closure $onConfirm) : self {
 		Utils::validateCallableSignature(function(Player $player) : void{}, $onConfirm);
-		return new self($title, $text, function(Player $player, bool $response) use ($onConfirm): void{
-			if($response){
+		return new self($title, $text, function(Player $player, bool $response) use ($onConfirm): void {
+			if ($response) {
 				$onConfirm($player);
 			}
 		});
 	}
+
 	/**
 	 * @return string
 	 */
-	final public function getType() : string{
+	final public function getType() : string {
 		return self::TYPE_MODAL;
 	}
+
 	/**
 	 * @return string
 	 */
-	public function getYesButtonText() : string{
+	public function getYesButtonText() : string {
 		return $this->yesButton;
 	}
+
 	/**
 	 * @return string
 	 */
-	public function getNoButtonText() : string{
+	public function getNoButtonText() : string {
 		return $this->noButton;
 	}
+
 	/**
 	 * @return array
 	 */
-	protected function serializeFormData() : array{
+	protected function serializeFormData() : array {
 		return [
 			"content" => $this->text,
 			"button1" => $this->yesButton,
 			"button2" => $this->noButton
 		];
 	}
-	final public function handleResponse(Player $player, $data) : void{
-		if(!is_bool($data)){
+
+	final public function handleResponse(Player $player, $data) : void {
+		if (!is_bool($data)) {
 			throw new FormValidationException("Expected bool, got " . gettype($data));
 		}
 		($this->onSubmit)($player, $data);
 	}
+
 }
