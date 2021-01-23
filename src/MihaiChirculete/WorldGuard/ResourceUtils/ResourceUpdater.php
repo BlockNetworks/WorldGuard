@@ -9,6 +9,7 @@ namespace MihaiChirculete\WorldGuard\ResourceUtils;
  */
 class ResourceUpdater
 {
+
     /** Only 1 instance of this class will be allowed at all times */
     private static $instance = null;
     private $resourceManagerInstance = null;
@@ -21,13 +22,14 @@ class ResourceUpdater
     {
         $this->resourceManagerInstance = $resourceManagerInstance;
 
-        $this->defaultConfig = array(
+        $this->defaultConfig = [
             "version" => $this->resourceManagerInstance->getPluginVersion(),
             "language to use" => "you could use de, fr, en, ro, zhsimp or zhtrad. (zhtrad is for traditional chinese, zhsimp for simplified chinese) if the file does not exist, it will create a default en file!",
             "language" => "en",
-            "debugging" => false);
+            "debugging" => false,
+        ];
 
-        $this->defaultMessages = array (
+        $this->defaultMessages = [
             "version" => $this->resourceManagerInstance->getPluginVersion(),
             "denied-enter" => "You cannot enter this area.",
             "denied-leave" => "You cannot leave this area.",
@@ -41,10 +43,10 @@ class ResourceUpdater
             "denied-block-break" => "You cannot break blocks in this region.",
             "denied-block-place" => "You cannot place blocks in this region.",
             "denied-hurt-animal" => "You cannot hurt animals of this region.",
-            "denied-hurt-monster" => "You cannot hurt monsters of this region."
-        );
+            "denied-hurt-monster" => "You cannot hurt monsters of this region.",
+        ];
 
-        $this->defaultLanguagePack = array(
+        $this->defaultLanguagePack = [
             "version" => $this->resourceManagerInstance->getPluginVersion(),
             "author_name" => "Chalapa",
             "gui_wg_menu_title" => "World Guard Menu",
@@ -134,13 +136,14 @@ class ResourceUpdater
             "gui_effect_fatal_poison" => "Fatal Poison",
             "gui_effect_conduit_power" => "Conduit Power",
             "gui_effect_restart_label" => "After adding/deleting effect you need to restart your server!",
-        );
+        ];
     }
 
     public static function getInstance(ResourceManager $resourceManagerInstance)
     {
-        if(ResourceUpdater::$instance === null)
+        if (ResourceUpdater::$instance === null) {
             ResourceUpdater::$instance = new ResourceUpdater($resourceManagerInstance);
+        }
 
         return ResourceUpdater::$instance;
     }
@@ -151,11 +154,13 @@ class ResourceUpdater
         $ver = $this->resourceManagerInstance->getConfigVersion();
 
         /** Old versions do not have this field so if its not set its obviously an outdated one */
-        if($ver === null)
+        if ($ver === null) {
             return true;
+        }
 
-        if($ver !== $this->resourceManagerInstance->getPluginVersion())
+        if ($ver !== $this->resourceManagerInstance->getPluginVersion()) {
             return true;
+        }
 
         return false;
     }
@@ -165,11 +170,13 @@ class ResourceUpdater
         $ver = $this->resourceManagerInstance->getMessagesVersion();
 
         /** Old versions do not have this field so if its not set its obviously an outdated one */
-        if($ver === null)
+        if ($ver === null) {
             return true;
+        }
 
-        if($ver !== $this->resourceManagerInstance->getPluginVersion())
+        if ($ver !== $this->resourceManagerInstance->getPluginVersion()) {
             return true;
+        }
 
         return false;
     }
@@ -179,34 +186,43 @@ class ResourceUpdater
         $ver = $this->resourceManagerInstance->getLanguagePackVersion();
 
         /** Old versions do not have this field so if its not set its obviously an outdated one */
-        if($ver === null)
+        if ($ver === null) {
             return true;
+        }
 
-        if($ver !== $this->resourceManagerInstance->getPluginVersion())
+        if ($ver !== $this->resourceManagerInstance->getPluginVersion()) {
             return true;
+        }
 
         return false;
     }
     /****************************************************************** */
 
-    public function getDefaultConfig() { return $this->defaultConfig; }
-    public function getDefaultMessages() { return $this->defaultMessages; }
-    public function getDefaultLanguagePack() { return $this->defaultLanguagePack; }
+    public function getDefaultConfig() {
+        return $this->defaultConfig;
+    }
+
+    public function getDefaultMessages() {
+        return $this->defaultMessages;
+    }
+
+    public function getDefaultLanguagePack() {
+        return $this->defaultLanguagePack;
+    }
 
     /** For each resource file check it's version and if it doesn't match have it updated */
     public function updateResourcesIfRequired($forceUpdate = false)
     {
-        if($this->isConfigResourceOutdated() || $forceUpdate === true)
-        {
+        if ($this->isConfigResourceOutdated() || $forceUpdate === true) {
             $oldConfig = $this->resourceManagerInstance->getConfig();
 
             $newConfigKeys = array_keys($this->getDefaultConfig());
 
             /** If a key from the new config is not present in the old config, then add it */
-            foreach ($newConfigKeys as $key)
-            {
-                if(!isset($oldConfig[$key]))
+            foreach ($newConfigKeys as $key) {
+                if (!isset($oldConfig[$key])) {
                     $oldConfig[$key] = $this->getDefaultConfig()[$key];
+                }
             }
 
             /** Change the file version to match the current version */
@@ -215,15 +231,14 @@ class ResourceUpdater
             $this->resourceManagerInstance->saveConfig($oldConfig);
         }
 
-        if($this->isMessagesResourceOutdated() || $forceUpdate === true)
-        {
+        if ($this->isMessagesResourceOutdated() || $forceUpdate === true) {
             $oldMessages = $this->resourceManagerInstance->getMessages();
 
             $newMessagesKeys = array_keys($this->getDefaultMessages());
-            foreach ($newMessagesKeys as $key)
-            {
-                if(!isset($oldMessages[$key]))
+            foreach ($newMessagesKeys as $key) {
+                if (!isset($oldMessages[$key])) {
                     $oldMessages[$key] = $this->getDefaultMessages()[$key];
+                }
             }
 
             $oldMessages['version'] = $this->resourceManagerInstance->getPluginVersion();
@@ -231,15 +246,14 @@ class ResourceUpdater
             $this->resourceManagerInstance->saveMessages($oldMessages);
         }
 
-        if($this->isLanguagePackResourceOutdated() || $forceUpdate === true)
-        {
+        if($this->isLanguagePackResourceOutdated() || $forceUpdate === true) {
             $oldLangPack = $this->resourceManagerInstance->getLanguagePack();
 
             $newLangPackKeys = array_keys($this->getDefaultLanguagePack());
-            foreach ($newLangPackKeys as $key)
-            {
-                if(!isset($oldLangPack[$key]))
+            foreach ($newLangPackKeys as $key) {
+                if (!isset($oldLangPack[$key])) {
                     $oldLangPack[$key] = $this->getDefaultLanguagePack()[$key];
+                }
             }
 
             $oldLangPack['version'] = $this->resourceManagerInstance->getPluginVersion();
@@ -247,4 +261,5 @@ class ResourceUpdater
             $this->resourceManagerInstance->saveLanguagePack($oldLangPack);
         }
     }
+
 }
